@@ -20,15 +20,15 @@ foreign import fromDefaultImpl :: forall mod. String -> Effect (Promise mod)
 fromDefault :: forall mod m. MonadAff m => String -> m { | mod }
 fromDefault = fromDefaultImpl >>> Promise.toAffE >>> liftAff
 
-class Curried f output | output -> f where
-  curried :: f -> output
+class Uncurried f output | output -> f where
+  uncurried :: f -> output
 
-instance Curried (Fn3 a b c d) (a -> b -> c -> d) where
-  curried = runFn3
-else instance Curried (Fn2 a b c) (a -> b -> c) where
-  curried f = \a -> \b -> runFn2 f a b
-else instance Curried (a -> b) (a -> b) where
-  curried f = \a -> runFn1 f a
+instance Uncurried (Fn3 a b c d) (a -> b -> c -> d) where
+  uncurried = runFn3
+else instance Uncurried (Fn2 a b c) (a -> b -> c) where
+  uncurried = runFn2
+else instance Uncurried (Fn1 a b) (a -> b) where
+  uncurried = runFn1
 
 class Effectful f output | output -> f where
   effectful :: f -> output
@@ -41,9 +41,9 @@ foreign import effectful1 :: forall a b. Fn1 a b -> a -> Effect b
 
 instance MonadEffect eff => Effectful (Fn3 a b c d) (a -> b -> c -> eff d) where
   effectful f = \a -> \b -> \c -> effectful3 f a b c # liftEffect
-else instance MonadEffect eff =>Effectful (Fn2 a b c) (a -> b -> eff c) where
+else instance MonadEffect eff => Effectful (Fn2 a b c) (a -> b -> eff c) where
   effectful f = \a -> \b -> effectful2 f a b # liftEffect
-else instance MonadEffect eff =>Effectful (Fn1 a b) (a -> eff b) where
+else instance MonadEffect eff => Effectful (Fn1 a b) (a -> eff b) where
   effectful f = \a -> effectful1 f a # liftEffect
 
 foreign import scoped3 :: forall mod a b c d. mod -> Fn3 a b c d -> a -> b -> c -> d
@@ -75,6 +75,4 @@ else instance Variadic (Varargs -> b) (Array a -> b) where
   variadic f = \a -> variadicImpl f $ unsafeCoerce a
 else instance Variadic (Varargs -> b) (a -> b) where
   variadic f = \a -> variadicImpl f $ varargs1 a
-
-
 
