@@ -1,2 +1,2 @@
-# purescript-lazy-joe 🦥
+# 🎷 purescript-lazy-joe 🦥
 
