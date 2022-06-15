@@ -3,10 +3,8 @@ module Test.Main where
 import Prelude
 
 import Effect (Effect)
-import Effect.Aff (launchAff_)
+import Effect.Aff (Aff, launchAff_)
 import Effect.Class.Console (log)
-
-import Effect.Class (liftEffect)
 import Lazy.Joe (effectful, fromDefault, scoped, variadic)
 
 main :: Effect Unit
@@ -24,23 +22,22 @@ main = launchAff_ do
     --    y :: Effect String
     y = effectful (variadic blue) "hello"
 
-  liftEffect $ x >>= log
-  liftEffect $ y >>= log
+  x >>= log
+  y >>= log
   -- log $ blue "blau"
   let
-    x :: Effect String
-    x = underline # \{ bold } -> bold # \{ green } -> effectful green "grün"
-  str <- liftEffect x
-  log str
+    underlined :: Aff String
+    underlined = underline # \{ bold } -> bold # \{ green:g } -> effectful g "grün"
+  underlined >>= log
   -- let
   --   c :: Effect String
   --   c = effectfulScoped3 m rgb 123 45 67 <#> \{ underline } -> underline "Underlined reddish color"
-  log $ scoped m rgb 123 45 67 # \{ underline } -> underline "Underlined reddish color"
+  log $ scoped m rgb 123 45 67 # \{ underline: u } -> u "Underlined reddish color"
 
   let 
-    c :: Effect String
-    c = effectful (scoped m rgb) 123 45 67 <#> \{ underline } -> underline "Underlined reddish color"
+    c :: Aff String
+    c = effectful (scoped m rgb) 123 45 67 <#> \{ underline:u } -> u "Underlined reddish color"
   
   log "Effect not run"
-  liftEffect c >>= log
+  c >>= log
   pure unit

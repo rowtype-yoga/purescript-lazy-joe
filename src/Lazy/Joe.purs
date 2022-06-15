@@ -7,6 +7,7 @@ import Control.Promise as Promise
 import Data.Function.Uncurried (Fn1, Fn2, Fn3, mkFn2, mkFn3, runFn1, runFn2, runFn3)
 import Effect (Effect)
 import Effect.Aff.Class (class MonadAff, liftAff)
+import Effect.Class (class MonadEffect, liftEffect)
 import Unsafe.Coerce (unsafeCoerce)
 
 foreign import fromImpl :: forall mod. String -> Effect (Promise mod)
@@ -38,12 +39,12 @@ foreign import effectful2 :: forall a b c. Fn2 a b c -> a -> b -> Effect c
 
 foreign import effectful1 :: forall a b. Fn1 a b -> a -> Effect b
 
-instance Effectful (Fn3 a b c d) (a -> b -> c -> Effect d) where
-  effectful f = \a -> \b -> \c -> effectful3 f a b c
-else instance Effectful (Fn2 a b c) (a -> b -> Effect c) where
-  effectful f = \a -> \b -> effectful2 f a b
-else instance Effectful (Fn1 a b) (a -> Effect b) where
-  effectful f = \a -> effectful1 f a
+instance MonadEffect eff => Effectful (Fn3 a b c d) (a -> b -> c -> eff d) where
+  effectful f = \a -> \b -> \c -> effectful3 f a b c # liftEffect
+else instance MonadEffect eff =>Effectful (Fn2 a b c) (a -> b -> eff c) where
+  effectful f = \a -> \b -> effectful2 f a b # liftEffect
+else instance MonadEffect eff =>Effectful (Fn1 a b) (a -> eff b) where
+  effectful f = \a -> effectful1 f a # liftEffect
 
 foreign import scoped3 :: forall mod a b c d. mod -> Fn3 a b c d -> a -> b -> c -> d
 
