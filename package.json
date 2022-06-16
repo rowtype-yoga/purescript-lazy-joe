@@ -11,6 +11,8 @@
   "license": "MIT-0",
   "type": "module",
   "devDependencies": {
-    "chalk": "^5.0.1"
+    "chalk": "^5.0.1",
+    "fuse.js": "^6.6.2",
+    "got": "^12.1.0"
   }
 }
