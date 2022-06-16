@@ -9,7 +9,7 @@ For these days when you got the blues and are just too lazy to write ffi code.
 * [Usage](#usage)
     * [Method chaining](#method-chaining)
     * [Uncurried functions](#uncurried-functions)
-    * [Varargs functions](#vararg-functions)
+    * [Vararg functions](#vararg-functions)
     * [Scoped functions](#scoped-functions)
     * [Effectful functions](#effectful-functions)
     * [`new` constructor](#new-constructor)
