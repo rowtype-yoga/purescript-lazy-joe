@@ -8,10 +8,11 @@ For these days when you got the blues and are just too lazy to write ffi code.
 * [Installation](#installation)
 * [Usage](#usage)
     * [Method chaining](#method-chaining)
-    * [Uncurried](#uncurried)
-    * [Varargs](#varargs)
-    * [Scoped](#scoped)
-    * [Effectful](#effectful)
+    * [Uncurried functions](#uncurried-functions)
+    * [Varargs functions](#vararg-functions)
+    * [Scoped functions](#scoped-functions)
+    * [Effectful functions](#effectful-functions)
+    * [`new` constructor](#new-constructor)
 * [Credits](#credits)
 
 ## Installation
@@ -75,7 +76,7 @@ Running it will print:
 
 ![green leaf printed in bold green underline](./assets/green-leaf.png).
 
-### Uncurried
+### Uncurried functions
 
 js typically uses uncurried functions (e.g. `f(a,b,c) `) instead of uncurried functions (e.g. `f(a)(b)(c)` ) like purescript. E.g. we can use the `blue` function as a three-argument uncurried function:
 
@@ -97,7 +98,7 @@ Running it will print:
 
 ![blue azul blau in blue colours](./assets/blau-azul.png)
 
-### Varargs
+### Vararg functions
 
 js functions are sometimes designed to be variadic, i.e. to have a variable number of arguments. In fact, the colour methods in `chalk` are variadic methods (as you have seen in the previous example) and you can pass an arbitrary number of arguments:
 ```js
@@ -115,7 +116,7 @@ main = launchAff_ do
   log $ variadic blue [ "Hello", "world!", "Hola", "mundo!"]
 ```
 
-### Scoped
+### Scoped functions
 
 Sometimes js functions don't work in purescript, because they  sometimes use `this` internally which fails to resolve in a curried contex. E.g. simply using the `rgb` function from `chalk` as we did before will fail. To make it work again we will need to set the scope for `this` properly. You can use `scoped` to set the scope of a function to the module: 
 
@@ -131,7 +132,7 @@ Running it will print:
 
 ![purple in bold purple with a kite](./assets/purple-kite.png)
 
-### Effectful
+### Effectful functions
 
 Let's try another example and install minimalistic http-client `got`:
 
@@ -164,6 +165,9 @@ main = launchAff_ do
 
 We import the `post` from `got`. The first thing we need to do is uncurry it, since it receives two arguments, the url and the json record. We then wrap it using `effectful` so that is run in an `Effect`. We can then call the effectful js function `json()` on the resulting `Promise` to get the body, so we can just `bind` (`>>=`) it.
 
+### `new` constructor
+
+TBA
 
 ## Credits
 
