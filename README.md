@@ -1,8 +1,8 @@
 # 🎷 purescript-lazy-joe 🦥
 
-A purescript library for these days when you got the blues and are just too lazy to write ffi code. 
+Zero boilerplate ffi for purescript. 
 
-`lazy-joe` let's you ffi your js library without having to write the typical purescript ffi boilerplate.
+For these days when you got the blues and are just too lazy to write ffi code. 
 
 ## ToC
 * [Installation](#installation)
