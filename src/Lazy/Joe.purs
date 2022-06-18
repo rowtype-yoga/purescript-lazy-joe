@@ -6,8 +6,8 @@ module Lazy.Joe
   , new
   , class Scoped
   , scoped
-  , class Uncurried
-  , uncurried
+  , class Curried
+  , curried
   , class Variadic
   , variadic
   , from
@@ -36,38 +36,38 @@ foreign import fromDefaultImpl :: forall mod. String -> Effect (Promise mod)
 fromDefault :: forall mod m. MonadAff m => String -> m mod
 fromDefault = fromDefaultImpl >>> Promise.toAffE >>> liftAff
 
-class Uncurried f output | output -> f where
-  uncurried :: f -> output
+class Curried f output | output -> f where
+  curried :: f -> output
 
-instance Uncurried (Fn5 a b c d e f) (a -> b -> c -> d -> e -> f) where
-  uncurried = runFn5
+instance Curried (Fn5 a b c d e f) (a -> b -> c -> d -> e -> f) where
+  curried = runFn5
 
-else instance Uncurried (Fn5 a b c d e f) (Fn5 a b c d e f) where
-  uncurried = identity
+else instance Curried (Fn5 a b c d e f) (Fn5 a b c d e f) where
+  curried = identity
 
-else instance Uncurried (Fn4 a b c d e) (a -> b -> c -> d -> e) where
-  uncurried = runFn4
+else instance Curried (Fn4 a b c d e) (a -> b -> c -> d -> e) where
+  curried = runFn4
 
-else instance Uncurried (Fn4 a b c d e) (Fn4 a b c d e) where
-  uncurried = identity
+else instance Curried (Fn4 a b c d e) (Fn4 a b c d e) where
+  curried = identity
 
-else instance Uncurried (Fn3 a b c d) (a -> b -> c -> d) where
-  uncurried = runFn3
+else instance Curried (Fn3 a b c d) (a -> b -> c -> d) where
+  curried = runFn3
 
-else instance Uncurried (Fn3 a b c d) (Fn3 a b c d) where
-  uncurried = identity
+else instance Curried (Fn3 a b c d) (Fn3 a b c d) where
+  curried = identity
 
-else instance Uncurried (Fn2 a b c) (a -> b -> c) where
-  uncurried = runFn2
+else instance Curried (Fn2 a b c) (a -> b -> c) where
+  curried = runFn2
 
-else instance Uncurried (Fn2 a b c) (Fn2 a b c) where
-  uncurried = identity
+else instance Curried (Fn2 a b c) (Fn2 a b c) where
+  curried = identity
 
-else instance Uncurried (Fn1 a b) (Fn1 a b) where
-  uncurried = identity
+else instance Curried (Fn1 a b) (Fn1 a b) where
+  curried = identity
 
-else instance Uncurried (Fn1 a b) (a -> b) where
-  uncurried = runFn1
+else instance Curried (Fn1 a b) (a -> b) where
+  curried = runFn1
 
 
 foreign import new0 :: forall a. Fn0 a -> a

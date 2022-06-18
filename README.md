@@ -6,6 +6,7 @@ For these days when you got the blues and are just too lazy to write ffi code.
 
 ## ToC
 * [Installation](#installation)
+* [Quickstart](#quickstart)
 * [Usage](#usage)
     * [Method chaining](#method-chaining)
     * [Uncurried functions](#uncurried-functions)
@@ -19,6 +20,15 @@ For these days when you got the blues and are just too lazy to write ffi code.
 
 ```
 spago install lazy-joe
+```
+
+## Quickstart
+
+```
+main :: Effect Unit
+main = launchAff_ do
+  { red } <- fromDefault "chalk" -- import a module
+  log $ red "Red velvet 🎂" -- use a function
 ```
 
 ## Usage
@@ -56,7 +66,12 @@ You can easily import the `default` export from a module using `fromDefault`. Th
 
 ### Method chaining
 
-In js method chaining is often used. In chalk, you can combine different styles by chaining:
+In js method chaining is often used. 
+
+
+#### Example
+
+In chalk, you can combine different styles by chaining:
 
 ```js
 import chalk from 'chalk';
@@ -78,20 +93,28 @@ Running it will print:
 
 ### Uncurried functions
 
-js typically uses uncurried functions (e.g. `f(a,b,c) `) instead of uncurried functions (e.g. `f(a)(b)(c)` ) like purescript. E.g. we can use the `blue` function as a three-argument uncurried function:
+js typically uses uncurried functions (e.g. `f(a,b,c) `) instead of uncurried functions (e.g. `f(a)(b)(c)` ) like purescript. Use `curried` to use the uncurried js function as a curried purescript function:
+
+```
+result = curried myFunc arg1 arg2 arg3
+```
+
+#### Example
+
+E.g. we can use the `blue` function as a three-argument uncurried function:
 
 ```js
 console.log(chalk.blue('blue', 'azul', 'blau'));
 ```
 
-In purescript functions are curried, so we need to uncurry them using `uncurried`:
+In purescript functions are curried, so we need to uncurry them using `curried`:
 
 ```purescript
 main :: Effect Unit
 main = launchAff_ do
   { blue } <- fromDefault "chalk"
   
-  log $ uncurried blue "blue" "azul" "blau"
+  log $ curried blue "blue" "azul" "blau"
 ```
 
 Running it will print: 
@@ -100,7 +123,18 @@ Running it will print:
 
 ### Vararg functions
 
-js functions are sometimes designed to be variadic, i.e. to have a variable number of arguments. In fact, the colour methods in `chalk` are variadic methods (as you have seen in the previous example) and you can pass an arbitrary number of arguments:
+js functions are sometimes designed to be variadic, i.e. to have a variable number of arguments. Use `variadic myModuleOrFunc func` for functions that accept varargs:
+
+```purescript
+let 
+  example1 = variadic func arg1
+  example1 = variadic func arg1 arg2 arg3
+  example1 = variadic func [arg1, arg2, arg3, arg4]
+```
+
+#### Eample
+
+In fact, the colour methods in `chalk` are variadic methods (as you have seen in the previous example) and you can pass an arbitrary number of arguments:
 ```js
 console.log(chalk.blue('Hello', 'world!', 'Hola', 'mundo!'));
 ```
@@ -118,14 +152,22 @@ main = launchAff_ do
 
 ### Scoped functions
 
-Sometimes js functions don't work in purescript, because they  sometimes use `this` internally which fails to resolve in a curried contex. E.g. simply using the `rgb` function from `chalk` as we did before will fail. To make it work again we will need to set the scope for `this` properly. You can use `scoped` to set the scope of a function to the module: 
+Sometimes js functions don't work in purescript, because they internally use `this` which fails to resolve in a curried contex. Use `scoped myModuleOrFunc func` you to make a function scoped:
+
+```purescript
+result <- scoped myModuleOrFunc func arg1 arg2
+```
+
+#### Example
+
+Simply using the `rgb` function from `chalk` as we did before will fail because it uses `this` internally. To make it work again we will need to set the scope for the function to the module: 
 
 ```purescript
 main :: Effect Unit
 main = launchAff_ do
   m@{ rgb } <- fromDefault "chalk"
   
-  log $ scoped m (uncurried rgb) 129 37 218 # \{ bold } -> bold "PURPLE!!! 🪁"
+  log $ scoped m (curried rgb) 129 37 218 # \{ bold } -> bold "PURPLE!!! 🪁"
 ```
 
 Running it will print:
@@ -133,6 +175,16 @@ Running it will print:
 ![purple in bold purple with a kite](./assets/purple-kite.png)
 
 ### Effectful functions
+
+js functions very often cause side-effects (e.g. like printing to the console). Use `effectful` you to catch these side-effects and return `Effect` instead:
+
+```purescript
+let
+  result :: Effect SomeResult 
+  result = effectful func arg1 arg2
+```
+
+#### Example
 
 Let's try another example and install minimalistic http-client `got`:
 
@@ -167,7 +219,42 @@ We import the `post` from `got`. The first thing we need to do is uncurry it, si
 
 ### `new` constructor
 
-TBA
+Use `new` to create new objects:
+
+```purescript
+myModule <- fromDefault "my-module"
+let myObj = new myModule arg1 arg2
+```
+
+#### Example
+
+`fuse.js` is a library for fuzzy search. In js you use it by first creating a new `Fuse` object using `new` and passing the data as a list and some options:
+```js
+const fuse = new Fuse(list, options);
+```
+Then you can search on this object:
+```js
+const pattern = "my-search-pattern"
+fuse.search(pattern)
+```
+
+We first import the default export from `fuse.js` which gives us the class, which we can then pass to `new` to create the `Fuse` object:
+
+```purescript
+fuse <- fromDefault "fuse.js"
+  let
+    list =
+      [ { "title": "Old Man's War", "author": { "firstName": "John", "lastName": "Scalzi" } }
+      , { "title": "The Lock Artist", "author": { "firstName": "Steve", "lastName": "Hamilton" } }
+      ]
+    options =
+      { keys: [ "title", "author.firstName" ]
+      }
+  result :: Array { item :: { title :: String, author :: { firstName :: String, lastName :: String } } } <-
+    (new fuse list options) # \f@{ search } -> effectful (scoped f search) "eve"
+
+  logShow result
+```
 
 ## Credits
 

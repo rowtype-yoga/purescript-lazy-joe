@@ -6,7 +6,7 @@ import Control.Promise as Promise
 import Effect (Effect)
 import Effect.Aff (Aff, launchAff_)
 import Effect.Class.Console (log, logShow)
-import Lazy.Joe (effectful, fromDefault, new, scoped, uncurried, variadic)
+import Lazy.Joe (effectful, fromDefault, new, scoped, curried, variadic)
 
 main :: Effect Unit
 main = launchAff_ do
@@ -39,7 +39,7 @@ main = launchAff_ do
   c >>= log
 
   { post } <- fromDefault "got"
-  resp <- Promise.toAffE $ effectful (uncurried post) "https://httpbin.org/anything" { json: { hello: "🌎" } } >>= \{ json } -> json
+  resp <- Promise.toAffE $ effectful (curried post) "https://httpbin.org/anything" { json: { hello: "🌎" } } >>= \{ json } -> json
   log resp.json
 
   fuse <- fromDefault "fuse.js"
