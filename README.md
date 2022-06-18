@@ -93,7 +93,7 @@ Running it will print:
 
 ### Uncurried functions
 
-js typically uses uncurried functions (e.g. `f(a,b,c) `) instead of uncurried functions (e.g. `f(a)(b)(c)` ) like purescript. Use `curried` to use the uncurried js function as a curried purescript function:
+js typically uses uncurried functions (e.g. `f(a,b,c) `) instead of curried functions (e.g. `f(a)(b)(c)` ) like purescript. Use `curried` to use the uncurried js function as a curried purescript function:
 
 ```
 result = curried myFunc arg1 arg2 arg3
@@ -211,7 +211,7 @@ Clearly, `post` is an effectful function, as it triggers a promise. So in puresc
 main :: Effect Unit
 main = launchAff_ do
   { post } <- fromDefault "got"
-  resp <- Promise.toAffE $ effectful (uncurried post) "https://httpbin.org/anything" { json: { hello: "🌎" } } >>= \{ json } -> json
+  resp <- Promise.toAffE $ effectful (curried post) "https://httpbin.org/anything" { json: { hello: "🌎" } } >>= \{ json } -> json
   log resp.json
 ```
 
