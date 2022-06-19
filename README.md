@@ -66,12 +66,12 @@ You can easily import the `default` export from a module using `fromDefault`. Th
 
 ### Method chaining
 
-In js method chaining is often used. 
+In js method chaining is a common pattern. In purescript we can use function application to model this pattern.
 
 
 #### Example
 
-In chalk, you can combine different styles by chaining:
+In chalk, you can combine different styles by chaining them:
 
 ```js
 import chalk from 'chalk';
@@ -107,7 +107,7 @@ E.g. we can use the `blue` function as a three-argument uncurried function:
 console.log(chalk.blue('blue', 'azul', 'blau'));
 ```
 
-In purescript functions are curried, so we need to uncurry them using `curried`:
+In purescript functions are curried, so we need to curry them using `curried`:
 
 ```purescript
 main :: Effect Unit
